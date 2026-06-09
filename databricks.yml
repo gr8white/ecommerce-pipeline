@@ -1,0 +1,14 @@
+bundle:
+  name: ecommerce_pipeline
+variables:
+  catalog:
+    default: ecommerce
+targets:
+  dev:
+    mode: development
+    workspace:
+      host: https://dbc-626eaf36-4d96.cloud.databricks.com/browse/folders/3797568758108296?o=7474656259944450
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-626eaf36-4d96.cloud.databricks.com/browse/folders/3797568758108296?o=7474656259944450
