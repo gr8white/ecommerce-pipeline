@@ -12,13 +12,12 @@ from pyspark.sql.functions import col, current_timestamp
 # orders_df.show()
 
 # orders_df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable("ecommerce.bronze.olist_orders")
-
-### .mode("append") for appending new data to the target table
+# .mode("append") for appending new data to the target table
 
 VOLUME = "/Volumes/ecommerce/bronze/raw_files"
 
 files = [
-    ("olist_customers_dataset.csv",           "customers"),
+    ("olist_customers_dataset.csv",            "customers"),
     ("olist_geolocation_dataset.csv",          "geolocation"),
     ("olist_order_items_dataset.csv",          "order_items"),
     ("olist_order_payments_dataset.csv",       "order_payments"),
@@ -34,9 +33,9 @@ for filename, table in files:
         .option("header", "true")
         .option("inferSchema", "true")
         .option("quote", '"')
-        # .option("escape", '"')
-        # .option("multiLine", "true")   # reviews file has newlines in comment text
-        # .option("encoding", "UTF-8")   # Portuguese characters in reviews
+        .option("escape", '"')
+        .option("multiLine", "true")   # reviews file has newlines in comment text
+        .option("encoding", "UTF-8")   # Portuguese characters in reviews
         .csv(f"{VOLUME}/{filename}")
         .withColumn("_source_file", col("_metadata.file_path"))
         .withColumn("_ingested_at", col("_metadata.file_modification_time"))
