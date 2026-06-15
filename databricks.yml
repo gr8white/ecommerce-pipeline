@@ -1,8 +1,14 @@
 bundle:
   name: ecommerce_pipeline
+
+include:
+  - resources/*.yml
 variables:
   catalog:
     default: ecommerce
+  warehouse_id:
+    lookup:
+      warehouse: 'Starter Warehouse'
 targets:
   dev:
     mode: development

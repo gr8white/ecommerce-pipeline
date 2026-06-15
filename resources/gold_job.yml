@@ -1,0 +1,15 @@
+resources:
+  jobs:
+    gold_metrics_job:
+      name: 'Gold Metrics - ${bundle.target}'
+      tasks:
+        - task_key: build_metrics
+          notebook_task:
+            notebook_path: ../src/gold/build_metrics
+            source: WORKSPACE
+          sql_task:
+            warehouse_id: ${var.warehouse_id}
+      schedule:
+        quartz_cron_expression: '0 0 * * * ?'
+        timezone_id: 'UTC'
+        pause_status: UNPAUSED
