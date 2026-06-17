@@ -38,7 +38,8 @@ for filename, table in files:
         .option("encoding", "UTF-8")   # Portuguese characters in reviews
         .csv(f"{VOLUME}/{filename}")
         .withColumn("_source_file", col("_metadata.file_path"))
-        .withColumn("_ingested_at", col("_metadata.file_modification_time"))
+        .withColumn("_source_modified_at", col("_metadata.file_modification_time"))
+        .withColumn("_ingested_at", current_timestamp())
     )
 
     df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"ecommerce.bronze.{table}")
