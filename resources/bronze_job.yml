@@ -1,0 +1,85 @@
+resources:
+  jobs:
+    ecommerce_full_job:
+      name: "[${bundle.target}] Ecommerce Pipeline"
+      trigger:
+        pause_status: UNPAUSED
+        file_arrival:
+          url: /Volumes/ecommerce/bronze/raw_files/
+      tasks:
+        - task_key: bronze_ingestion
+          spark_python_task:
+            python_file: ${workspace.file_path}/src/bronze/ingest_raw.py
+          max_retries: 2
+          min_retry_interval_millis: 120000
+          disable_auto_optimization: false
+          environment_key: Default
+        - task_key: data_quality_check
+          depends_on:
+            - task_key: bronze_ingestion
+          spark_python_task:
+            python_file: ${workspace.file_path}/src/bronze/validate_counts.py
+          min_retry_interval_millis: 900000
+          disable_auto_optimization: true
+          environment_key: Default
+        - task_key: silver_customers
+          depends_on:
+            - task_key: data_quality_check
+          spark_python_task:
+            python_file: ${workspace.file_path}/src/silver/silver_customers.py
+          environment_key: Default
+        - task_key: silver_order_items
+          depends_on:
+            - task_key: data_quality_check
+          spark_python_task:
+            python_file: ${workspace.file_path}/src/silver/silver_order_items.py
+          environment_key: Default
+        - task_key: silver_orders
+          depends_on:
+            - task_key: data_quality_check
+          spark_python_task:
+            python_file: ${workspace.file_path}/src/silver/silver_orders.py
+          environment_key: Default
+        - task_key: silver_products
+          depends_on:
+            - task_key: data_quality_check
+          spark_python_task:
+            python_file: ${workspace.file_path}/src/silver/silver_products.py
+          environment_key: Default
+        - task_key: silver_sellers
+          depends_on:
+            - task_key: data_quality_check
+          spark_python_task:
+            python_file: ${workspace.file_path}/src/silver/silver_sellers.py
+          environment_key: Default
+        - task_key: gold_build
+          depends_on:
+            - task_key: silver_customers
+            - task_key: silver_sellers
+            - task_key: silver_orders
+            - task_key: silver_products
+            - task_key: silver_order_items
+          notebook_task:
+            notebook_path: ${workspace.file_path}/src/gold/build_metrics
+            warehouse_id: 2a43605d3b914de4
+        - task_key: notification
+          depends_on:
+            - task_key: silver_customers
+            - task_key: silver_sellers
+            - task_key: silver_orders
+            - task_key: silver_products
+            - task_key: gold_build
+            - task_key: bronze_ingestion
+            - task_key: silver_order_items
+            - task_key: data_quality_check
+          run_if: ALL_DONE
+          spark_python_task:
+            python_file: ${workspace.file_path}/src/gold/notification.py
+          environment_key: Default
+      queue:
+        enabled: true
+      environments:
+        - environment_key: Default
+          spec:
+            environment_version: "5"
+      performance_target: PERFORMANCE_OPTIMIZED

@@ -5,10 +5,8 @@ resources:
       tasks:
         - task_key: build_metrics
           notebook_task:
-            notebook_path: ../src/gold/build_metrics
-            source: WORKSPACE
-          sql_task:
-            warehouse_id: ${var.warehouse_id}
+            notebook_path: ${workspace.file_path}/src/gold/build_metrics
+            warehouse_id: 2a43605d3b914de4
       schedule:
         quartz_cron_expression: '0 0 * * * ?'
         timezone_id: 'UTC'

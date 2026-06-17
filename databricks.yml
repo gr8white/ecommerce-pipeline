@@ -8,13 +8,15 @@ variables:
     default: ecommerce
   warehouse_id:
     lookup:
-      warehouse: 'Starter Warehouse'
+      warehouse: 'Serverless Starter Warehouse'
 targets:
   dev:
+    default: true
     mode: development
     workspace:
-      host: https://dbc-626eaf36-4d96.cloud.databricks.com/browse/folders/3797568758108296?o=7474656259944450
+      host: https://dbc-626eaf36-4d96.cloud.databricks.com
   prod:
     mode: production
     workspace:
-      host: https://dbc-626eaf36-4d96.cloud.databricks.com/browse/folders/3797568758108296?o=7474656259944450
+      host: https://dbc-626eaf36-4d96.cloud.databricks.com
+      root_path: /Workspace/Users/derrick.white@umbrage.com/.bundle/${bundle.name}/${bundle.target}
